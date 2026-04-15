@@ -1,0 +1,233 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #e8eef8;
+  background: #09111f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(43, 101, 255, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(0, 194, 168, 0.16), transparent 24%),
+    #09111f;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7db4ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.75rem);
+  line-height: 1;
+}
+
+.subtitle {
+  margin: 12px 0 0;
+  color: #9db0ce;
+  max-width: 720px;
+}
+
+.status-pill {
+  background: rgba(0, 194, 168, 0.12);
+  color: #74f2d8;
+  border: 1px solid rgba(116, 242, 216, 0.3);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hero-grid,
+.bot-grid,
+.two-col {
+  display: grid;
+  gap: 18px;
+}
+
+.hero-grid {
+  grid-template-columns: 1.5fr 1fr 1fr;
+  margin-bottom: 28px;
+}
+
+.hero-card,
+.bot-card,
+.panel {
+  background: rgba(12, 21, 39, 0.92);
+  border: 1px solid rgba(125, 180, 255, 0.12);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.hero-card.primary {
+  background: linear-gradient(135deg, rgba(32, 56, 107, 0.95), rgba(10, 18, 33, 0.98));
+}
+
+.hero-card h2,
+.section-head h2,
+.bot-card h3,
+.panel h3 {
+  margin: 0 0 10px;
+}
+
+.hero-card p,
+.hero-card li,
+.panel p,
+.panel li,
+.bot-card li,
+.focus,
+.role {
+  color: #9db0ce;
+}
+
+.hero-card ul,
+.bot-card ul,
+.rules-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.section-block {
+  margin-bottom: 28px;
+}
+
+.section-head {
+  margin-bottom: 16px;
+}
+
+.section-head p,
+.compact p {
+  margin: 6px 0 0;
+  color: #8ea3c6;
+}
+
+.bot-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.bot-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.lane {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6ca6ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.role {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.focus {
+  margin: 0 0 14px;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.chip.active,
+.chip.live,
+.chip.ready {
+  background: rgba(53, 195, 136, 0.12);
+  color: #82f1b8;
+  border-color: rgba(130, 241, 184, 0.25);
+}
+
+.chip.planned {
+  background: rgba(255, 184, 77, 0.12);
+  color: #ffd486;
+  border-color: rgba(255, 212, 134, 0.2);
+}
+
+.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.queue-list {
+  display: grid;
+  gap: 12px;
+}
+
+.queue-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.queue-item h3 {
+  margin: 0 0 6px;
+}
+
+.queue-item p {
+  margin: 0;
+}
+
+.queue-item span {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #7db4ff;
+}
+
+.rules-list li {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 1000px) {
+  .hero-grid,
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+  }
+}
