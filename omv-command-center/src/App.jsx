@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
 const headlineMetrics = [
@@ -223,6 +223,8 @@ const approvalChannelOptions = ['Text', 'Email', 'Call Notes', 'Direct Mail']
 const priorityOptions = ['High', 'Medium', 'Low']
 const referralStatusOptions = ['New Referral', 'Qualified', 'In Review', 'Offer / Dispo Active', 'Under Contract', 'Closed + Paid']
 const payoutOptions = ['Not Started', 'Pending close', 'Awaiting disposition', 'Scheduled', 'Paid']
+const approvalStorageKey = 'omv-command-center-approval-items'
+const referralStorageKey = 'omv-command-center-referral-items'
 
 const systemRules = [
   'Nothing sends externally without JJ approval.',
@@ -264,11 +266,26 @@ function statusClassName(value) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
 
+function loadStoredItems(storageKey, fallback) {
+  if (typeof window === 'undefined') return fallback
+
+  const rawValue = window.localStorage.getItem(storageKey)
+
+  if (!rawValue) return fallback
+
+  try {
+    const parsed = JSON.parse(rawValue)
+    return Array.isArray(parsed) ? parsed : fallback
+  } catch {
+    return fallback
+  }
+}
+
 function App() {
-  const [approvalItems, setApprovalItems] = useState(initialApprovalQueue)
+  const [approvalItems, setApprovalItems] = useState(() => loadStoredItems(approvalStorageKey, initialApprovalQueue))
   const [approvalForm, setApprovalForm] = useState(emptyApprovalForm)
   const [approvalFilter, setApprovalFilter] = useState('All')
-  const [referralItems, setReferralItems] = useState(initialReferrals)
+  const [referralItems, setReferralItems] = useState(() => loadStoredItems(referralStorageKey, initialReferrals))
   const [referralForm, setReferralForm] = useState(emptyReferralForm)
   const [referralFilter, setReferralFilter] = useState('All')
 
@@ -303,6 +320,14 @@ function App() {
   }, [referralFilter, referralItems])
 
   const referralStages = referralStatusOptions
+
+  useEffect(() => {
+    window.localStorage.setItem(approvalStorageKey, JSON.stringify(approvalItems))
+  }, [approvalItems])
+
+  useEffect(() => {
+    window.localStorage.setItem(referralStorageKey, JSON.stringify(referralItems))
+  }, [referralItems])
 
   function handleApprovalSubmit(event) {
     event.preventDefault()
@@ -490,6 +515,7 @@ function App() {
               <h2>Add draft</h2>
               <p>Create a new approval item for copy, dispo, or follow-up review.</p>
             </div>
+            <p className="helper-copy">This now saves in this browser automatically, so refreshes will keep your entries.</p>
             <label>
               Title
               <input value={approvalForm.title} onChange={(event) => setApprovalForm({ ...approvalForm, title: event.target.value })} required />
@@ -621,6 +647,7 @@ function App() {
               <h2>Add referral</h2>
               <p>Capture a new agent referral with enough detail to work and pay it correctly.</p>
             </div>
+            <p className="helper-copy">This now saves in this browser automatically, so refreshes will keep your entries.</p>
             <div className="form-row two-up">
               <label>
                 Agent
@@ -783,8 +810,8 @@ function App() {
           </div>
           <ol className="build-list">
             <li>Connect live FUB and Zap status into the dashboard.</li>
-            <li>Persist approval queue data and approvals to a real database.</li>
-            <li>Persist referrals, notes, and payout records to a real database.</li>
+            <li>Replace browser storage with a shared cloud database.</li>
+            <li>Add user auth and role permissions for JJ approvals.</li>
             <li>Add a seller follow-up board for Mason and Bolt.</li>
             <li>Add dispo and buyer watchlists for Harbor and Scout.</li>
           </ol>
