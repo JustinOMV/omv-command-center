@@ -158,6 +158,61 @@ const dispoMilestones = [
   { title: 'Closing deadline', owner: 'Transactions', due: '06/16/2026', status: 'Critical' },
 ]
 
+
+const initialDeals = [
+  {
+    dealName: '2435 McGregor St',
+    address: '2435 McGregor St, Lakeland, FL 33815',
+    acceptedDate: '2026-05-15',
+    closingDate: '2026-06-16',
+    askingPrice: '$65,000',
+    arv: '$220K',
+    beds: '3',
+    baths: '2',
+    sqft: '1,296',
+    lotSize: '0.25 acres',
+    propertyType: 'Mobile home on owned land',
+    condition: 'Full rehab',
+    occupancy: 'Vacant at closing',
+    accessStatus: 'Waiting on seller access',
+    photosStatus: 'Pending',
+    videoStatus: 'Pending',
+    buyerList: 'Lakeland cash buyers',
+    walkthroughDate: '',
+    offerDeadline: '',
+    titleCompany: '',
+    emd: '$5,000 non-refundable',
+    dispoNotes: 'Call through imported Lakeland buyer list first while waiting for property access.',
+  },
+]
+
+const emptyDealForm = {
+  dealName: '',
+  address: '',
+  acceptedDate: '',
+  closingDate: '',
+  askingPrice: '',
+  arv: '',
+  beds: '',
+  baths: '',
+  sqft: '',
+  lotSize: '',
+  propertyType: '',
+  condition: '',
+  occupancy: '',
+  accessStatus: 'Waiting on seller access',
+  photosStatus: 'Pending',
+  videoStatus: 'Pending',
+  buyerList: '',
+  walkthroughDate: '',
+  offerDeadline: '',
+  titleCompany: '',
+  emd: '',
+  dispoNotes: '',
+}
+
+const dealStorageKey = 'omv-command-center-deals'
+
 const initialApprovalQueue = [
   {
     title: 'Fairfield buyer email blast',
@@ -312,6 +367,8 @@ function App() {
   const [referralItems, setReferralItems] = useState(() => loadStoredItems(referralStorageKey, initialReferrals))
   const [referralForm, setReferralForm] = useState(emptyReferralForm)
   const [referralFilter, setReferralFilter] = useState('All')
+  const [dealItems, setDealItems] = useState(() => loadStoredItems(dealStorageKey, initialDeals))
+  const [dealForm, setDealForm] = useState(emptyDealForm)
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === 'undefined') return false
     return window.localStorage.getItem(authStorageKey) === 'true'
@@ -360,6 +417,10 @@ function App() {
     window.localStorage.setItem(referralStorageKey, JSON.stringify(referralItems))
   }, [referralItems])
 
+  useEffect(() => {
+    window.localStorage.setItem(dealStorageKey, JSON.stringify(dealItems))
+  }, [dealItems])
+
   function handleUnlock(event) {
     event.preventDefault()
 
@@ -377,6 +438,27 @@ function App() {
   function handleLock() {
     setIsUnlocked(false)
     window.localStorage.removeItem(authStorageKey)
+  }
+
+  function buildDealTimeline(deal) {
+    return [
+      { title: 'Contract accepted / dispo clock starts', due: deal.acceptedDate || 'TBD', owner: 'Dispo Manager', status: 'Completed' },
+      { title: 'Open title + verify record complete', due: 'Day 0', owner: 'Dispo Assistant', status: 'Pending' },
+      { title: 'Confirm access + request media', due: 'Day 0', owner: 'Acq / Seller', status: deal.photosStatus === 'Ready' ? 'Completed' : 'Active' },
+      { title: 'Build buyer list + prep outreach', due: 'Day 1', owner: 'Dispo Assistant', status: 'Pending' },
+      { title: 'Proactive A-tier buyer outreach', due: 'Day 2', owner: 'Dispo Manager', status: 'Pending' },
+      { title: 'Walkthrough reminders + RSVP confirmation', due: 'Day 3', owner: 'Dispo Assistant', status: 'Pending' },
+      { title: 'Walkthrough / offer window', due: deal.walkthroughDate || 'Day 4', owner: 'Dispo Manager', status: 'Pending' },
+      { title: 'Offer deadline / award buyer', due: deal.offerDeadline || 'Day 5', owner: 'Dispo Manager', status: 'Critical' },
+      { title: 'Closing deadline', due: deal.closingDate || 'TBD', owner: 'Transactions', status: 'Critical' },
+    ]
+  }
+
+  function handleDealSubmit(event) {
+    event.preventDefault()
+    setDealItems((current) => [{ ...dealForm }, ...current])
+    setDealForm(emptyDealForm)
+    setActiveTab('Deals')
   }
 
   function handleApprovalSubmit(event) {
@@ -953,6 +1035,164 @@ function App() {
 
         {activeTab === 'Deals' ? (
           <>
+            <section className="section-block workflow-section premium-workflow-section">
+              <div className="section-head">
+                <h2>New deal intake</h2>
+                <p>Start every dispo deal the same way so JJ and the team always know what happens next.</p>
+              </div>
+              <div className="workflow-grid premium-workflow-grid">
+                <form className="panel workflow-form premium-form-panel" onSubmit={handleDealSubmit}>
+                  <div className="section-head compact">
+                    <h2>Create new deal</h2>
+                    <p>Enter the contract details once, then use the generated timeline to run dispo.</p>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Deal name
+                      <input value={dealForm.dealName} onChange={(event) => setDealForm({ ...dealForm, dealName: event.target.value })} required />
+                    </label>
+                    <label>
+                      Property address
+                      <input value={dealForm.address} onChange={(event) => setDealForm({ ...dealForm, address: event.target.value })} required />
+                    </label>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Accepted date
+                      <input type="date" value={dealForm.acceptedDate} onChange={(event) => setDealForm({ ...dealForm, acceptedDate: event.target.value })} required />
+                    </label>
+                    <label>
+                      Closing date
+                      <input type="date" value={dealForm.closingDate} onChange={(event) => setDealForm({ ...dealForm, closingDate: event.target.value })} required />
+                    </label>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Asking price
+                      <input value={dealForm.askingPrice} onChange={(event) => setDealForm({ ...dealForm, askingPrice: event.target.value })} required />
+                    </label>
+                    <label>
+                      ARV
+                      <input value={dealForm.arv} onChange={(event) => setDealForm({ ...dealForm, arv: event.target.value })} required />
+                    </label>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Beds
+                      <input value={dealForm.beds} onChange={(event) => setDealForm({ ...dealForm, beds: event.target.value })} />
+                    </label>
+                    <label>
+                      Baths
+                      <input value={dealForm.baths} onChange={(event) => setDealForm({ ...dealForm, baths: event.target.value })} />
+                    </label>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Sqft
+                      <input value={dealForm.sqft} onChange={(event) => setDealForm({ ...dealForm, sqft: event.target.value })} />
+                    </label>
+                    <label>
+                      Lot size
+                      <input value={dealForm.lotSize} onChange={(event) => setDealForm({ ...dealForm, lotSize: event.target.value })} />
+                    </label>
+                  </div>
+                  <label>
+                    Property type
+                    <input value={dealForm.propertyType} onChange={(event) => setDealForm({ ...dealForm, propertyType: event.target.value })} />
+                  </label>
+                  <label>
+                    Condition
+                    <input value={dealForm.condition} onChange={(event) => setDealForm({ ...dealForm, condition: event.target.value })} />
+                  </label>
+                  <div className="form-row two-up">
+                    <label>
+                      Occupancy
+                      <input value={dealForm.occupancy} onChange={(event) => setDealForm({ ...dealForm, occupancy: event.target.value })} />
+                    </label>
+                    <label>
+                      EMD
+                      <input value={dealForm.emd} onChange={(event) => setDealForm({ ...dealForm, emd: event.target.value })} />
+                    </label>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Access status
+                      <input value={dealForm.accessStatus} onChange={(event) => setDealForm({ ...dealForm, accessStatus: event.target.value })} />
+                    </label>
+                    <label>
+                      Buyer list
+                      <input value={dealForm.buyerList} onChange={(event) => setDealForm({ ...dealForm, buyerList: event.target.value })} />
+                    </label>
+                  </div>
+                  <div className="form-row two-up">
+                    <label>
+                      Walkthrough date
+                      <input type="date" value={dealForm.walkthroughDate} onChange={(event) => setDealForm({ ...dealForm, walkthroughDate: event.target.value })} />
+                    </label>
+                    <label>
+                      Offer deadline
+                      <input type="date" value={dealForm.offerDeadline} onChange={(event) => setDealForm({ ...dealForm, offerDeadline: event.target.value })} />
+                    </label>
+                  </div>
+                  <label>
+                    Title company
+                    <input value={dealForm.titleCompany} onChange={(event) => setDealForm({ ...dealForm, titleCompany: event.target.value })} />
+                  </label>
+                  <label>
+                    Dispo notes
+                    <textarea value={dealForm.dispoNotes} onChange={(event) => setDealForm({ ...dealForm, dispoNotes: event.target.value })} rows="4" />
+                  </label>
+                  <button type="submit" className="primary-button">Create deal</button>
+                </form>
+
+                <div className="panel workflow-list-panel premium-list-panel">
+                  <div className="section-head compact">
+                    <h2>Active deals</h2>
+                    <p>Every contract should create a visible deal card and generated dispo timeline.</p>
+                  </div>
+                  <div className="approval-queue-list referral-grid">
+                    {dealItems.map((deal) => (
+                      <article key={`${deal.dealName}-${deal.address}`} className="approval-card premium-work-card">
+                        <div className="approval-card-top">
+                          <div>
+                            <p className="lane">{deal.propertyType || 'Deal'}</p>
+                            <h3>{deal.dealName}</h3>
+                            <p className="helper-copy">{deal.address}</p>
+                          </div>
+                          <span className={`chip ${statusClassName(deal.photosStatus)}`}>{deal.photosStatus} media</span>
+                        </div>
+                        <div className="approval-meta-grid referral-meta-grid">
+                          <div><span className="micro-label">Accepted</span><p>{deal.acceptedDate}</p></div>
+                          <div><span className="micro-label">Closing</span><p>{deal.closingDate}</p></div>
+                          <div><span className="micro-label">Ask</span><p>{deal.askingPrice}</p></div>
+                          <div><span className="micro-label">ARV</span><p>{deal.arv}</p></div>
+                          <div><span className="micro-label">Access</span><p>{deal.accessStatus}</p></div>
+                          <div><span className="micro-label">Buyer list</span><p>{deal.buyerList}</p></div>
+                        </div>
+                        <p className="helper-copy">{deal.dispoNotes}</p>
+                        <div className="timeline-list deal-timeline-list">
+                          {buildDealTimeline(deal).map((item) => (
+                            <div key={`${deal.dealName}-${item.title}`} className="timeline-item">
+                              <div className="timeline-dot" />
+                              <div className="timeline-copy">
+                                <div className="approval-card-top timeline-top">
+                                  <div>
+                                    <h3>{item.title}</h3>
+                                    <p className="helper-copy">Owner: {item.owner}</p>
+                                  </div>
+                                  <span className={`chip ${statusClassName(item.status)}`}>{item.status}</span>
+                                </div>
+                                <p className="helper-copy">Due: {item.due}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
             <section className="section-block workflow-section premium-workflow-section">
               <div className="section-head">
                 <h2>Dispo templates</h2>
