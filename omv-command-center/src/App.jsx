@@ -127,6 +127,61 @@ const queueCards = [
   { title: 'Deals needing attention', count: '02', detail: 'Lesia close date and Fairfield dispo remain priority.' },
 ]
 
+const approvalMetrics = [
+  { label: 'Drafts ready', value: '12', hint: 'Prepared by Draft, Harbor, and Mason for JJ review.' },
+  { label: 'Pending approval', value: '5', hint: 'Waiting on JJ before anything goes out.' },
+  { label: 'Approved today', value: '3', hint: 'Cleared and ready for send or handoff.' },
+  { label: 'Rejected / revise', value: '2', hint: 'Needs copy changes, targeting fixes, or timing changes.' },
+]
+
+const approvalQueue = [
+  {
+    title: 'Fairfield buyer email blast',
+    channel: 'Email',
+    owner: 'Harbor',
+    audience: 'Cash buyer list, Saint Pete',
+    status: 'Pending Approval',
+    priority: 'High',
+    detail: 'Buyer-facing dispo email draft for Fairfield, ready for JJ to review and approve.',
+  },
+  {
+    title: 'Unsigned seller follow-up text',
+    channel: 'Text',
+    owner: 'Mason',
+    audience: 'Offer Sent - Live',
+    status: 'Draft',
+    priority: 'High',
+    detail: 'Short objection-handling follow-up for sellers who received the offer but have not signed.',
+  },
+  {
+    title: 'VIP buyer walkthrough invite',
+    channel: 'Text',
+    owner: 'Scout',
+    audience: 'VIP Buyer + Walkthrough Showed',
+    status: 'Approved',
+    priority: 'Medium',
+    detail: 'Message for serious buyers to lock in walkthrough attendance and confirm timeline.',
+  },
+  {
+    title: 'McGregor dispo teaser',
+    channel: 'Email',
+    owner: 'Draft',
+    audience: 'Lakeland cash buyers',
+    status: 'Sent',
+    priority: 'Medium',
+    detail: 'Buyer-safe teaser copy with asking price only, no internal spread shown.',
+  },
+  {
+    title: 'Cold buyer reactivation nudge',
+    channel: 'Text',
+    owner: 'Ember',
+    audience: 'Cold buyers 90+ days',
+    status: 'Rejected',
+    priority: 'Low',
+    detail: 'Needs stronger local tone before JJ will approve it for use.',
+  },
+]
+
 const systemRules = [
   'Nothing sends externally without JJ approval.',
   'PPL seller automation stays separate from CMS and every other lead source.',
@@ -261,6 +316,49 @@ function App() {
         </div>
       </section>
 
+      <section className="section-block">
+        <div className="section-head">
+          <h2>Approval queue</h2>
+          <p>A safe review layer so JJ can approve drafts before anything goes out.</p>
+        </div>
+        <div className="approval-metric-grid">
+          {approvalMetrics.map((metric) => (
+            <div key={metric.label} className="metric-card approval-metric-card">
+              <span className="metric-value">{metric.value}</span>
+              <span className="metric-label">{metric.label}</span>
+              <span className="metric-hint">{metric.hint}</span>
+            </div>
+          ))}
+        </div>
+        <div className="approval-queue-list">
+          {approvalQueue.map((item) => (
+            <article key={item.title} className="approval-card">
+              <div className="approval-card-top">
+                <div>
+                  <p className="lane">{item.channel}</p>
+                  <h3>{item.title}</h3>
+                </div>
+                <div className="bot-header-meta">
+                  <span className={`chip ${item.status.toLowerCase().replace(/\s+/g, '-')}`}>{item.status}</span>
+                  <span className="priority-tag">{item.priority}</span>
+                </div>
+              </div>
+              <p className="focus">{item.detail}</p>
+              <div className="approval-meta-grid">
+                <div>
+                  <span className="micro-label">Owner</span>
+                  <p>{item.owner}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Audience</span>
+                  <p>{item.audience}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="section-block two-col">
         <div className="panel">
           <div className="section-head compact">
@@ -281,10 +379,10 @@ function App() {
           </div>
           <ol className="build-list">
             <li>Connect live FUB and Zap status into the dashboard.</li>
+            <li>Turn the approval queue into a true click-to-review workflow.</li>
             <li>Add a seller follow-up board for Mason and Bolt.</li>
             <li>Add dispo and buyer watchlists for Harbor and Scout.</li>
-            <li>Add deal health and closing timeline views for Atlas.</li>
-            <li>Add weekly KPI panels and trend views for Ledger.</li>
+            <li>Add agent referral intake and payout tracking.</li>
           </ol>
         </div>
       </section>
