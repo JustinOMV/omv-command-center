@@ -124,8 +124,38 @@ const commandLanes = [
 const queueCards = [
   { title: 'New seller leads', count: '04', detail: 'Immediate contact pressure belongs to Bolt and Mason.' },
   { title: 'Unsigned offers', count: '03', detail: 'Track price, terms, timeline, payoff, and signer friction.' },
-  { title: 'Buyer shortlist', count: '188', detail: 'Scout should keep Fairfield segmented and buyer-ready.' },
-  { title: 'Deals needing attention', count: '02', detail: 'Lesia close date and Fairfield dispo remain priority.' },
+  { title: 'Buyer shortlist', count: '202', detail: 'Lakeland cash buyers imported and ready for McGregor outreach.' },
+  { title: 'Deals needing attention', count: '02', detail: 'McGregor dispo and Fairfield close remain priority.' },
+]
+
+const dispoTemplates = [
+  {
+    name: 'Buyer text blast',
+    channel: 'SMS',
+    status: 'Ready',
+    body: `Hello {First Name},\n\nNew off market deal in Lakeland\n\nMcGregor St, Lakeland, FL 33815\n\n3 bed / 2 bath\nMobile home on owned land\n1,296 sqft\n.25 acre lot\nVacant at closing\nFull rehab\n\nAsking: $65,000\nARV: $220K\nClosing: 6/16\n\nPictures available upon request\n\n— JJ, OMV\n\nReply STOP to opt out`,
+  },
+  {
+    name: 'Buyer call opener',
+    channel: 'Call',
+    status: 'Ready',
+    body: `Hey, this is JJ with Off Market Vault. I wanted to see if you're buying in Lakeland right now. I've got an off market deal on McGregor St, 3/2 mobile home on owned land, 1,296 sqft, quarter acre lot, vacant at closing, full rehab, asking 65 with ARV around 220. Is that something you'd want details on?`,
+  },
+  {
+    name: 'No-photo objection reply',
+    channel: 'SMS',
+    status: 'Ready',
+    body: `I don't have the photo set back yet, but I wanted to give my buyers first crack at it before I blasted it wider.`,
+  },
+]
+
+const dispoMilestones = [
+  { title: 'Import buyer list into FUB', owner: 'JJ / Team', due: 'Done', status: 'Completed' },
+  { title: 'Call Lakeland buyer list first pass', owner: 'JJ', due: 'Today', status: 'Active' },
+  { title: 'Capture photos / video', owner: 'Field / Acq team', due: 'ASAP', status: 'Pending' },
+  { title: 'Send buyer text blast', owner: 'JJ / Dispo', due: 'After photos or call traction', status: 'Pending' },
+  { title: 'Hot buyer follow-up', owner: 'Dispo team', due: 'Same day', status: 'Pending' },
+  { title: 'Closing deadline', owner: 'Transactions', due: '06/16/2026', status: 'Critical' },
 ]
 
 const initialApprovalQueue = [
@@ -922,33 +952,66 @@ function App() {
         ) : null}
 
         {activeTab === 'Deals' ? (
-          <section className="section-block two-col premium-footer-grid">
-            <div className="panel">
-              <div className="section-head compact">
-                <h2>Operating rules</h2>
-                <p>The standards this room should enforce every day.</p>
+          <>
+            <section className="section-block workflow-section premium-workflow-section">
+              <div className="section-head">
+                <h2>Dispo templates</h2>
+                <p>Reusable outreach templates for JJ and future team members.</p>
               </div>
-              <ul className="rules-list">
-                {systemRules.map((rule) => (
-                  <li key={rule}>{rule}</li>
+              <div className="approval-queue-list referral-grid">
+                {dispoTemplates.map((template) => (
+                  <article key={template.name} className="approval-card premium-work-card">
+                    <div className="approval-card-top">
+                      <div>
+                        <p className="lane">{template.channel}</p>
+                        <h3>{template.name}</h3>
+                      </div>
+                      <span className={`chip ${statusClassName(template.status)}`}>{template.status}</span>
+                    </div>
+                    <p className="template-body">{template.body}</p>
+                  </article>
                 ))}
-              </ul>
-            </div>
-
-            <div className="panel build-panel">
-              <div className="section-head compact">
-                <h2>Next build wave</h2>
-                <p>What upgrades this from local command center to deeper OMV infrastructure.</p>
               </div>
-              <ol className="build-list">
-                <li>Connect live FUB and Zap status into the dashboard.</li>
-                <li>Let JJ change the passcode in-app.</li>
-                <li>Add searchable notes and timeline history to approvals and referrals.</li>
-                <li>Add a seller follow-up board for Mason and Bolt.</li>
-                <li>Add dispo and buyer watchlists for Harbor and Scout.</li>
-              </ol>
-            </div>
-          </section>
+            </section>
+
+            <section className="section-block two-col premium-footer-grid">
+              <div className="panel">
+                <div className="section-head compact">
+                  <h2>Dispo calendar and reminders</h2>
+                  <p>Major due dates and shared team checkpoints for this deal flow.</p>
+                </div>
+                <div className="timeline-list">
+                  {dispoMilestones.map((item) => (
+                    <div key={item.title} className="timeline-item">
+                      <div className="timeline-dot" />
+                      <div className="timeline-copy">
+                        <div className="approval-card-top timeline-top">
+                          <div>
+                            <h3>{item.title}</h3>
+                            <p className="helper-copy">Owner: {item.owner}</p>
+                          </div>
+                          <span className={`chip ${statusClassName(item.status)}`}>{item.status}</span>
+                        </div>
+                        <p className="helper-copy">Due: {item.due}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="panel build-panel">
+                <div className="section-head compact">
+                  <h2>Operating rules</h2>
+                  <p>The standards this room should enforce every day.</p>
+                </div>
+                <ul className="rules-list">
+                  {systemRules.map((rule) => (
+                    <li key={rule}>{rule}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          </>
         ) : null}
 
         {activeTab !== 'Deals' ? (
