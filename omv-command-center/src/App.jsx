@@ -689,7 +689,7 @@ function App() {
                     <p className="role">{bot.role}</p>
                   </div>
                   <div className="bot-header-meta">
-                    <span className={`chip ${statusClassName(bot.status)}`}>{bot.status}</span>
+                    <span className={`chip ${statusClassName(bot.status)}`}><span className={`status-dot ${statusClassName(bot.status)}`} />{bot.status}</span>
                     <span className="priority-tag">{bot.priority}</span>
                   </div>
                 </div>
@@ -1022,7 +1022,7 @@ function App() {
                       <p className="role">{bot.role}</p>
                     </div>
                     <div className="bot-header-meta">
-                      <span className={`chip ${statusClassName(bot.status)}`}>{bot.status}</span>
+                      <span className={`chip ${statusClassName(bot.status)}`}><span className={`status-dot ${statusClassName(bot.status)}`} />{bot.status}</span>
                       <span className="priority-tag">{bot.priority}</span>
                     </div>
                   </div>
