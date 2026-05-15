@@ -156,15 +156,16 @@ img {
 
 .app-shell {
   position: relative;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 24px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px 28px 40px;
 }
 
 .premium-shell {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 22px;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
 }
 
 .ambient {
@@ -478,7 +479,7 @@ h1 {
 
 .hero-panel,
 .workflow-grid {
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: minmax(420px, 0.95fr) minmax(0, 1.25fr);
 }
 
 .premium-hero-panel {
@@ -567,7 +568,7 @@ h1 {
 
 .bot-grid,
 .approval-queue-list {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .referral-grid {
@@ -631,7 +632,7 @@ h1 {
 .field-shell {
   display: grid;
   gap: 8px;
-  padding: 14px;
+  padding: 14px 16px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(132, 163, 255, 0.1);
@@ -648,8 +649,15 @@ h1 {
 .field-shell input,
 .field-shell select,
 .field-shell textarea {
+  width: 100%;
+  min-height: 52px;
   border: 0;
   background: rgba(7, 12, 24, 0.88);
+  border-radius: 14px;
+}
+
+.field-shell textarea {
+  min-height: 120px;
 }
 
 .workflow-list-panel {
