@@ -407,6 +407,28 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+.referral-grid {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+
+.referral-stage-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.stage-pill {
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #cfe5ff;
+  border: 1px solid rgba(125, 180, 255, 0.16);
+  background: rgba(110, 177, 255, 0.08);
+}
+
 .approval-card-top {
   display: flex;
   justify-content: space-between;
@@ -423,6 +445,23 @@ h1 {
 .approval-meta-grid p {
   margin: 6px 0 0;
   color: #dce8f8;
+}
+
+.referral-meta-grid {
+  margin-top: 6px;
+}
+
+.chip.qualified,
+.chip.under-contract {
+  background: rgba(56, 215, 162, 0.12);
+  color: #84f4c4;
+  border-color: rgba(132, 244, 196, 0.2);
+}
+
+.chip.in-review {
+  background: rgba(110, 177, 255, 0.12);
+  color: #b7d9ff;
+  border-color: rgba(183, 217, 255, 0.2);
 }
 
 .rules-list li,

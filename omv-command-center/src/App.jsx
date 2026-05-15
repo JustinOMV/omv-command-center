@@ -182,6 +182,64 @@ const approvalQueue = [
   },
 ]
 
+const referralMetrics = [
+  { label: 'Open referrals', value: '6', hint: 'Local agent referrals currently being worked by OMV.' },
+  { label: 'Agent partners', value: '14', hint: 'Agents and brokers who have referred or may refer deals.' },
+  { label: 'Pending payouts', value: '2', hint: 'Referral fees waiting on close or final confirmation.' },
+  { label: 'Closed referrals', value: '3', hint: 'Referral deals that made it through contract to close.' },
+]
+
+const referrals = [
+  {
+    agent: 'Sarah Thompson',
+    brokerage: 'Keller Williams St. Pete',
+    seller: 'Maria Gonzales',
+    property: '4128 15th Ave S, St. Petersburg, FL',
+    timeline: '14 days',
+    motivation: 'Inherited property, wants quick close',
+    condition: 'Dated, needs full cosmetic rehab',
+    price: '$210K expectation',
+    fee: '25% of OMV fee',
+    payout: 'Pending close',
+    status: 'Qualified',
+  },
+  {
+    agent: 'David Ruiz',
+    brokerage: 'EXP Realty Tampa Bay',
+    seller: 'James Carter',
+    property: '2435 McGregor St, Lakeland, FL',
+    timeline: 'ASAP',
+    motivation: 'Vacant property, tired landlord',
+    condition: 'Rough, full rehab',
+    price: '$65K target ask',
+    fee: 'Flat $2,500',
+    payout: 'Awaiting disposition',
+    status: 'In Review',
+  },
+  {
+    agent: 'Nicole Benson',
+    brokerage: 'Compass',
+    seller: 'Evelyn Price',
+    property: '2858 Fairfield Ave S, St. Petersburg, FL',
+    timeline: '30 days',
+    motivation: 'Wants certainty and simple terms',
+    condition: 'Solid structure, light update path',
+    price: '$220K ask aligned',
+    fee: '25% of OMV fee',
+    payout: 'Scheduled',
+    status: 'Under Contract',
+  },
+]
+
+const referralStages = [
+  'New referral received',
+  'Qualified',
+  'In review',
+  'Offer / dispo active',
+  'Under contract',
+  'Closed + paid',
+]
+
 const systemRules = [
   'Nothing sends externally without JJ approval.',
   'PPL seller automation stays separate from CMS and every other lead source.',
@@ -359,6 +417,74 @@ function App() {
         </div>
       </section>
 
+      <section className="section-block">
+        <div className="section-head">
+          <h2>Agent referral system</h2>
+          <p>Track who referred the deal, what the seller needs, and what OMV owes if the deal closes.</p>
+        </div>
+        <div className="approval-metric-grid">
+          {referralMetrics.map((metric) => (
+            <div key={metric.label} className="metric-card approval-metric-card">
+              <span className="metric-value">{metric.value}</span>
+              <span className="metric-label">{metric.label}</span>
+              <span className="metric-hint">{metric.hint}</span>
+            </div>
+          ))}
+        </div>
+        <div className="referral-stage-strip">
+          {referralStages.map((stage) => (
+            <div key={stage} className="stage-pill">{stage}</div>
+          ))}
+        </div>
+        <div className="approval-queue-list referral-grid">
+          {referrals.map((referral) => (
+            <article key={`${referral.agent}-${referral.property}`} className="approval-card referral-card">
+              <div className="approval-card-top">
+                <div>
+                  <p className="lane">{referral.brokerage}</p>
+                  <h3>{referral.property}</h3>
+                </div>
+                <span className={`chip ${referral.status.toLowerCase().replace(/\s+/g, '-')}`}>{referral.status}</span>
+              </div>
+              <div className="approval-meta-grid referral-meta-grid">
+                <div>
+                  <span className="micro-label">Agent</span>
+                  <p>{referral.agent}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Seller</span>
+                  <p>{referral.seller}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Timeline</span>
+                  <p>{referral.timeline}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Condition</span>
+                  <p>{referral.condition}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Motivation</span>
+                  <p>{referral.motivation}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Price</span>
+                  <p>{referral.price}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Referral fee</span>
+                  <p>{referral.fee}</p>
+                </div>
+                <div>
+                  <span className="micro-label">Payout status</span>
+                  <p>{referral.payout}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="section-block two-col">
         <div className="panel">
           <div className="section-head compact">
@@ -380,9 +506,9 @@ function App() {
           <ol className="build-list">
             <li>Connect live FUB and Zap status into the dashboard.</li>
             <li>Turn the approval queue into a true click-to-review workflow.</li>
+            <li>Turn referrals into a searchable intake and payout pipeline.</li>
             <li>Add a seller follow-up board for Mason and Bolt.</li>
             <li>Add dispo and buyer watchlists for Harbor and Scout.</li>
-            <li>Add agent referral intake and payout tracking.</li>
           </ol>
         </div>
       </section>
