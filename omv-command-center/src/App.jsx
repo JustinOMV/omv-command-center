@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import './App.css'
 
 const headlineMetrics = [
@@ -127,14 +128,7 @@ const queueCards = [
   { title: 'Deals needing attention', count: '02', detail: 'Lesia close date and Fairfield dispo remain priority.' },
 ]
 
-const approvalMetrics = [
-  { label: 'Drafts ready', value: '12', hint: 'Prepared by Draft, Harbor, and Mason for JJ review.' },
-  { label: 'Pending approval', value: '5', hint: 'Waiting on JJ before anything goes out.' },
-  { label: 'Approved today', value: '3', hint: 'Cleared and ready for send or handoff.' },
-  { label: 'Rejected / revise', value: '2', hint: 'Needs copy changes, targeting fixes, or timing changes.' },
-]
-
-const approvalQueue = [
+const initialApprovalQueue = [
   {
     title: 'Fairfield buyer email blast',
     channel: 'Email',
@@ -182,14 +176,7 @@ const approvalQueue = [
   },
 ]
 
-const referralMetrics = [
-  { label: 'Open referrals', value: '6', hint: 'Local agent referrals currently being worked by OMV.' },
-  { label: 'Agent partners', value: '14', hint: 'Agents and brokers who have referred or may refer deals.' },
-  { label: 'Pending payouts', value: '2', hint: 'Referral fees waiting on close or final confirmation.' },
-  { label: 'Closed referrals', value: '3', hint: 'Referral deals that made it through contract to close.' },
-]
-
-const referrals = [
+const initialReferrals = [
   {
     agent: 'Sarah Thompson',
     brokerage: 'Keller Williams St. Pete',
@@ -231,14 +218,11 @@ const referrals = [
   },
 ]
 
-const referralStages = [
-  'New referral received',
-  'Qualified',
-  'In review',
-  'Offer / dispo active',
-  'Under contract',
-  'Closed + paid',
-]
+const approvalStatusOptions = ['Draft', 'Pending Approval', 'Approved', 'Sent', 'Rejected']
+const approvalChannelOptions = ['Text', 'Email', 'Call Notes', 'Direct Mail']
+const priorityOptions = ['High', 'Medium', 'Low']
+const referralStatusOptions = ['New Referral', 'Qualified', 'In Review', 'Offer / Dispo Active', 'Under Contract', 'Closed + Paid']
+const payoutOptions = ['Not Started', 'Pending close', 'Awaiting disposition', 'Scheduled', 'Paid']
 
 const systemRules = [
   'Nothing sends externally without JJ approval.',
@@ -248,7 +232,119 @@ const systemRules = [
   'Deals are not dead until the seller refuses to work with OMV or says stop contacting.',
 ]
 
+const emptyApprovalForm = {
+  title: '',
+  channel: 'Text',
+  owner: 'Draft',
+  audience: '',
+  status: 'Draft',
+  priority: 'Medium',
+  detail: '',
+}
+
+const emptyReferralForm = {
+  agent: '',
+  brokerage: '',
+  seller: '',
+  property: '',
+  timeline: '',
+  motivation: '',
+  condition: '',
+  price: '',
+  fee: '',
+  payout: 'Not Started',
+  status: 'New Referral',
+}
+
+function metricCount(items, key, value) {
+  return items.filter((item) => item[key] === value).length.toString()
+}
+
+function statusClassName(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+}
+
 function App() {
+  const [approvalItems, setApprovalItems] = useState(initialApprovalQueue)
+  const [approvalForm, setApprovalForm] = useState(emptyApprovalForm)
+  const [approvalFilter, setApprovalFilter] = useState('All')
+  const [referralItems, setReferralItems] = useState(initialReferrals)
+  const [referralForm, setReferralForm] = useState(emptyReferralForm)
+  const [referralFilter, setReferralFilter] = useState('All')
+
+  const approvalMetrics = useMemo(
+    () => [
+      { label: 'Drafts ready', value: metricCount(approvalItems, 'status', 'Draft'), hint: 'Prepared by Draft, Harbor, and Mason for JJ review.' },
+      { label: 'Pending approval', value: metricCount(approvalItems, 'status', 'Pending Approval'), hint: 'Waiting on JJ before anything goes out.' },
+      { label: 'Approved today', value: metricCount(approvalItems, 'status', 'Approved'), hint: 'Cleared and ready for send or handoff.' },
+      { label: 'Rejected / revise', value: metricCount(approvalItems, 'status', 'Rejected'), hint: 'Needs copy changes, targeting fixes, or timing changes.' },
+    ],
+    [approvalItems],
+  )
+
+  const referralMetrics = useMemo(
+    () => [
+      { label: 'Open referrals', value: referralItems.filter((item) => item.status !== 'Closed + Paid').length.toString(), hint: 'Local agent referrals currently being worked by OMV.' },
+      { label: 'Agent partners', value: new Set(referralItems.map((item) => item.agent)).size.toString(), hint: 'Agents and brokers who have referred or may refer deals.' },
+      { label: 'Pending payouts', value: referralItems.filter((item) => item.payout !== 'Paid' && item.payout !== 'Not Started').length.toString(), hint: 'Referral fees waiting on close or final confirmation.' },
+      { label: 'Closed referrals', value: metricCount(referralItems, 'status', 'Closed + Paid'), hint: 'Referral deals that made it through contract to close.' },
+    ],
+    [referralItems],
+  )
+
+  const visibleApprovalItems = useMemo(() => {
+    if (approvalFilter === 'All') return approvalItems
+    return approvalItems.filter((item) => item.status === approvalFilter)
+  }, [approvalFilter, approvalItems])
+
+  const visibleReferralItems = useMemo(() => {
+    if (referralFilter === 'All') return referralItems
+    return referralItems.filter((item) => item.status === referralFilter)
+  }, [referralFilter, referralItems])
+
+  const referralStages = referralStatusOptions
+
+  function handleApprovalSubmit(event) {
+    event.preventDefault()
+    setApprovalItems((current) => [{ ...approvalForm }, ...current])
+    setApprovalForm(emptyApprovalForm)
+    setApprovalFilter('All')
+  }
+
+  function handleReferralSubmit(event) {
+    event.preventDefault()
+    setReferralItems((current) => [{ ...referralForm }, ...current])
+    setReferralForm(emptyReferralForm)
+    setReferralFilter('All')
+  }
+
+  function moveApprovalStatus(index, direction) {
+    setApprovalItems((current) =>
+      current.map((item, itemIndex) => {
+        if (itemIndex !== index) return item
+        const currentIndex = approvalStatusOptions.indexOf(item.status)
+        const nextIndex = Math.max(0, Math.min(approvalStatusOptions.length - 1, currentIndex + direction))
+        return { ...item, status: approvalStatusOptions[nextIndex] }
+      }),
+    )
+  }
+
+  function moveReferralStatus(index, direction) {
+    setReferralItems((current) =>
+      current.map((item, itemIndex) => {
+        if (itemIndex !== index) return item
+        const currentIndex = referralStatusOptions.indexOf(item.status)
+        const nextIndex = Math.max(0, Math.min(referralStatusOptions.length - 1, currentIndex + direction))
+        const nextStatus = referralStatusOptions[nextIndex]
+        return {
+          ...item,
+          status: nextStatus,
+          payout: nextStatus === 'Closed + Paid' ? 'Paid' : item.payout,
+        }
+      }),
+    )
+  }
+
   return (
     <div className="app-shell">
       <div className="ambient ambient-left" />
@@ -374,7 +470,7 @@ function App() {
         </div>
       </section>
 
-      <section className="section-block">
+      <section className="section-block workflow-section">
         <div className="section-head">
           <h2>Approval queue</h2>
           <p>A safe review layer so JJ can approve drafts before anything goes out.</p>
@@ -388,36 +484,119 @@ function App() {
             </div>
           ))}
         </div>
-        <div className="approval-queue-list">
-          {approvalQueue.map((item) => (
-            <article key={item.title} className="approval-card">
-              <div className="approval-card-top">
-                <div>
-                  <p className="lane">{item.channel}</p>
-                  <h3>{item.title}</h3>
-                </div>
-                <div className="bot-header-meta">
-                  <span className={`chip ${item.status.toLowerCase().replace(/\s+/g, '-')}`}>{item.status}</span>
-                  <span className="priority-tag">{item.priority}</span>
-                </div>
+        <div className="workflow-grid">
+          <form className="panel workflow-form" onSubmit={handleApprovalSubmit}>
+            <div className="section-head compact">
+              <h2>Add draft</h2>
+              <p>Create a new approval item for copy, dispo, or follow-up review.</p>
+            </div>
+            <label>
+              Title
+              <input value={approvalForm.title} onChange={(event) => setApprovalForm({ ...approvalForm, title: event.target.value })} required />
+            </label>
+            <div className="form-row two-up">
+              <label>
+                Channel
+                <select value={approvalForm.channel} onChange={(event) => setApprovalForm({ ...approvalForm, channel: event.target.value })}>
+                  {approvalChannelOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Owner
+                <input value={approvalForm.owner} onChange={(event) => setApprovalForm({ ...approvalForm, owner: event.target.value })} required />
+              </label>
+            </div>
+            <label>
+              Audience
+              <input value={approvalForm.audience} onChange={(event) => setApprovalForm({ ...approvalForm, audience: event.target.value })} required />
+            </label>
+            <div className="form-row two-up">
+              <label>
+                Status
+                <select value={approvalForm.status} onChange={(event) => setApprovalForm({ ...approvalForm, status: event.target.value })}>
+                  {approvalStatusOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Priority
+                <select value={approvalForm.priority} onChange={(event) => setApprovalForm({ ...approvalForm, priority: event.target.value })}>
+                  {priorityOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <label>
+              Detail
+              <textarea value={approvalForm.detail} onChange={(event) => setApprovalForm({ ...approvalForm, detail: event.target.value })} rows="4" required />
+            </label>
+            <button type="submit" className="primary-button">Add to queue</button>
+          </form>
+
+          <div className="panel workflow-list-panel">
+            <div className="section-head compact workflow-list-head">
+              <div>
+                <h2>Workflow queue</h2>
+                <p>Review, filter, and move items through approval status.</p>
               </div>
-              <p className="focus">{item.detail}</p>
-              <div className="approval-meta-grid">
-                <div>
-                  <span className="micro-label">Owner</span>
-                  <p>{item.owner}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Audience</span>
-                  <p>{item.audience}</p>
-                </div>
-              </div>
-            </article>
-          ))}
+              <label className="filter-control">
+                Filter
+                <select value={approvalFilter} onChange={(event) => setApprovalFilter(event.target.value)}>
+                  <option value="All">All</option>
+                  {approvalStatusOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="approval-queue-list">
+              {visibleApprovalItems.map((item, index) => {
+                const sourceIndex = approvalItems.findIndex((queueItem) => queueItem === item)
+                const statusIndex = approvalStatusOptions.indexOf(item.status)
+                return (
+                  <article key={`${item.title}-${sourceIndex}`} className="approval-card">
+                    <div className="approval-card-top">
+                      <div>
+                        <p className="lane">{item.channel}</p>
+                        <h3>{item.title}</h3>
+                      </div>
+                      <div className="bot-header-meta">
+                        <span className={`chip ${item.status.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>{item.status}</span>
+                        <span className="priority-tag">{item.priority}</span>
+                      </div>
+                    </div>
+                    <p className="focus">{item.detail}</p>
+                    <div className="approval-meta-grid">
+                      <div>
+                        <span className="micro-label">Owner</span>
+                        <p>{item.owner}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Audience</span>
+                        <p>{item.audience}</p>
+                      </div>
+                    </div>
+                    <div className="workflow-actions">
+                      <button type="button" className="secondary-button" disabled={statusIndex === 0} onClick={() => moveApprovalStatus(sourceIndex, -1)}>
+                        Move back
+                      </button>
+                      <button type="button" className="primary-button" disabled={statusIndex === approvalStatusOptions.length - 1} onClick={() => moveApprovalStatus(sourceIndex, 1)}>
+                        Move forward
+                      </button>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="section-block">
+      <section className="section-block workflow-section">
         <div className="section-head">
           <h2>Agent referral system</h2>
           <p>Track who referred the deal, what the seller needs, and what OMV owes if the deal closes.</p>
@@ -436,52 +615,151 @@ function App() {
             <div key={stage} className="stage-pill">{stage}</div>
           ))}
         </div>
-        <div className="approval-queue-list referral-grid">
-          {referrals.map((referral) => (
-            <article key={`${referral.agent}-${referral.property}`} className="approval-card referral-card">
-              <div className="approval-card-top">
-                <div>
-                  <p className="lane">{referral.brokerage}</p>
-                  <h3>{referral.property}</h3>
-                </div>
-                <span className={`chip ${referral.status.toLowerCase().replace(/\s+/g, '-')}`}>{referral.status}</span>
+        <div className="workflow-grid">
+          <form className="panel workflow-form" onSubmit={handleReferralSubmit}>
+            <div className="section-head compact">
+              <h2>Add referral</h2>
+              <p>Capture a new agent referral with enough detail to work and pay it correctly.</p>
+            </div>
+            <div className="form-row two-up">
+              <label>
+                Agent
+                <input value={referralForm.agent} onChange={(event) => setReferralForm({ ...referralForm, agent: event.target.value })} required />
+              </label>
+              <label>
+                Brokerage
+                <input value={referralForm.brokerage} onChange={(event) => setReferralForm({ ...referralForm, brokerage: event.target.value })} required />
+              </label>
+            </div>
+            <div className="form-row two-up">
+              <label>
+                Seller
+                <input value={referralForm.seller} onChange={(event) => setReferralForm({ ...referralForm, seller: event.target.value })} required />
+              </label>
+              <label>
+                Property
+                <input value={referralForm.property} onChange={(event) => setReferralForm({ ...referralForm, property: event.target.value })} required />
+              </label>
+            </div>
+            <div className="form-row two-up">
+              <label>
+                Timeline
+                <input value={referralForm.timeline} onChange={(event) => setReferralForm({ ...referralForm, timeline: event.target.value })} required />
+              </label>
+              <label>
+                Price expectation
+                <input value={referralForm.price} onChange={(event) => setReferralForm({ ...referralForm, price: event.target.value })} required />
+              </label>
+            </div>
+            <label>
+              Motivation
+              <textarea value={referralForm.motivation} onChange={(event) => setReferralForm({ ...referralForm, motivation: event.target.value })} rows="3" required />
+            </label>
+            <label>
+              Condition
+              <textarea value={referralForm.condition} onChange={(event) => setReferralForm({ ...referralForm, condition: event.target.value })} rows="3" required />
+            </label>
+            <div className="form-row two-up">
+              <label>
+                Referral fee
+                <input value={referralForm.fee} onChange={(event) => setReferralForm({ ...referralForm, fee: event.target.value })} required />
+              </label>
+              <label>
+                Payout status
+                <select value={referralForm.payout} onChange={(event) => setReferralForm({ ...referralForm, payout: event.target.value })}>
+                  {payoutOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <label>
+              Workflow stage
+              <select value={referralForm.status} onChange={(event) => setReferralForm({ ...referralForm, status: event.target.value })}>
+                {referralStatusOptions.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className="primary-button">Add referral</button>
+          </form>
+
+          <div className="panel workflow-list-panel">
+            <div className="section-head compact workflow-list-head">
+              <div>
+                <h2>Referral workflow</h2>
+                <p>Filter referrals and move them forward from intake through payout.</p>
               </div>
-              <div className="approval-meta-grid referral-meta-grid">
-                <div>
-                  <span className="micro-label">Agent</span>
-                  <p>{referral.agent}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Seller</span>
-                  <p>{referral.seller}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Timeline</span>
-                  <p>{referral.timeline}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Condition</span>
-                  <p>{referral.condition}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Motivation</span>
-                  <p>{referral.motivation}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Price</span>
-                  <p>{referral.price}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Referral fee</span>
-                  <p>{referral.fee}</p>
-                </div>
-                <div>
-                  <span className="micro-label">Payout status</span>
-                  <p>{referral.payout}</p>
-                </div>
-              </div>
-            </article>
-          ))}
+              <label className="filter-control">
+                Filter
+                <select value={referralFilter} onChange={(event) => setReferralFilter(event.target.value)}>
+                  <option value="All">All</option>
+                  {referralStatusOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="approval-queue-list referral-grid">
+              {visibleReferralItems.map((referral) => {
+                const sourceIndex = referralItems.findIndex((item) => item === referral)
+                const statusIndex = referralStatusOptions.indexOf(referral.status)
+                return (
+                  <article key={`${referral.agent}-${referral.property}-${sourceIndex}`} className="approval-card referral-card">
+                    <div className="approval-card-top">
+                      <div>
+                        <p className="lane">{referral.brokerage}</p>
+                        <h3>{referral.property}</h3>
+                      </div>
+                      <span className={`chip ${referral.status.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>{referral.status}</span>
+                    </div>
+                    <div className="approval-meta-grid referral-meta-grid">
+                      <div>
+                        <span className="micro-label">Agent</span>
+                        <p>{referral.agent}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Seller</span>
+                        <p>{referral.seller}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Timeline</span>
+                        <p>{referral.timeline}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Condition</span>
+                        <p>{referral.condition}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Motivation</span>
+                        <p>{referral.motivation}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Price</span>
+                        <p>{referral.price}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Referral fee</span>
+                        <p>{referral.fee}</p>
+                      </div>
+                      <div>
+                        <span className="micro-label">Payout status</span>
+                        <p>{referral.payout}</p>
+                      </div>
+                    </div>
+                    <div className="workflow-actions">
+                      <button type="button" className="secondary-button" disabled={statusIndex === 0} onClick={() => moveReferralStatus(sourceIndex, -1)}>
+                        Move back
+                      </button>
+                      <button type="button" className="primary-button" disabled={statusIndex === referralStatusOptions.length - 1} onClick={() => moveReferralStatus(sourceIndex, 1)}>
+                        Move forward
+                      </button>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -505,8 +783,8 @@ function App() {
           </div>
           <ol className="build-list">
             <li>Connect live FUB and Zap status into the dashboard.</li>
-            <li>Turn the approval queue into a true click-to-review workflow.</li>
-            <li>Turn referrals into a searchable intake and payout pipeline.</li>
+            <li>Persist approval queue data and approvals to a real database.</li>
+            <li>Persist referrals, notes, and payout records to a real database.</li>
             <li>Add a seller follow-up board for Mason and Bolt.</li>
             <li>Add dispo and buyer watchlists for Harbor and Scout.</li>
           </ol>

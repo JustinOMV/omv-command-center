@@ -20,6 +20,13 @@ body {
     linear-gradient(180deg, #050915 0%, #081020 48%, #050813 100%);
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
 #root {
   min-height: 100vh;
 }
@@ -126,7 +133,9 @@ h1 {
 .queue-grid,
 .approval-metric-grid,
 .approval-queue-list,
-.approval-meta-grid {
+.approval-meta-grid,
+.workflow-grid,
+.form-row {
   display: grid;
   gap: 18px;
 }
@@ -182,7 +191,10 @@ h1 {
 .lane-card p,
 .queue-card p,
 .rules-list li,
-.build-list li {
+.build-list li,
+.workflow-form label,
+.filter-control,
+.helper-copy {
   color: #95a7c4;
 }
 
@@ -333,17 +345,30 @@ h1 {
 }
 
 .chip,
-.priority-tag {
+.priority-tag,
+.primary-button,
+.secondary-button,
+.stage-pill {
   border-radius: 999px;
-  padding: 7px 11px;
   font-size: 12px;
   font-weight: 800;
   border: 1px solid transparent;
 }
 
+.chip,
+.priority-tag,
+.stage-pill {
+  padding: 7px 11px;
+}
+
 .chip.online,
 .chip.live,
-.chip.ready {
+.chip.ready,
+.chip.approved,
+.chip.sent,
+.chip.qualified,
+.chip.under-contract,
+.chip.closed-+-paid {
   background: rgba(56, 215, 162, 0.12);
   color: #84f4c4;
   border-color: rgba(132, 244, 196, 0.2);
@@ -351,17 +376,12 @@ h1 {
 
 .chip.queued,
 .chip.pending-approval,
-.chip.draft {
+.chip.draft,
+.chip.new-referral,
+.chip.offer-dispo-active {
   background: rgba(255, 190, 103, 0.12);
   color: #ffd495;
   border-color: rgba(255, 212, 149, 0.2);
-}
-
-.chip.approved,
-.chip.sent {
-  background: rgba(56, 215, 162, 0.12);
-  color: #84f4c4;
-  border-color: rgba(132, 244, 196, 0.2);
 }
 
 .chip.rejected {
@@ -370,14 +390,104 @@ h1 {
   border-color: rgba(255, 154, 177, 0.2);
 }
 
+.chip.in-review {
+  background: rgba(110, 177, 255, 0.12);
+  color: #b7d9ff;
+  border-color: rgba(183, 217, 255, 0.2);
+}
+
 .priority-tag {
   background: rgba(110, 177, 255, 0.12);
   color: #c7e0ff;
   border-color: rgba(199, 224, 255, 0.2);
 }
 
+.primary-button,
+.secondary-button {
+  cursor: pointer;
+  padding: 11px 16px;
+  transition: 0.18s ease;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #6eb1ff, #00d8b4);
+  color: #07101e;
+  border: none;
+}
+
+.secondary-button {
+  background: rgba(110, 177, 255, 0.08);
+  color: #d8e9ff;
+  border-color: rgba(110, 177, 255, 0.18);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .two-col {
   grid-template-columns: 1fr 1fr;
+}
+
+.workflow-grid {
+  grid-template-columns: 0.9fr 1.1fr;
+  align-items: start;
+}
+
+.workflow-form {
+  display: grid;
+  gap: 14px;
+}
+
+.workflow-form label,
+.filter-control {
+  display: grid;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.workflow-form input,
+.workflow-form select,
+.workflow-form textarea,
+.filter-control select {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(125, 180, 255, 0.16);
+  background: rgba(9, 15, 28, 0.9);
+  color: #f4f7fb;
+  padding: 12px 14px;
+  outline: none;
+}
+
+.workflow-form textarea {
+  resize: vertical;
+  min-height: 92px;
+}
+
+.form-row.two-up {
+  grid-template-columns: 1fr 1fr;
+}
+
+.workflow-list-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+}
+
+.workflow-list-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.workflow-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .lane-owner {
@@ -419,13 +529,9 @@ h1 {
 }
 
 .stage-pill {
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
   letter-spacing: 0.04em;
   color: #cfe5ff;
-  border: 1px solid rgba(125, 180, 255, 0.16);
+  border-color: rgba(125, 180, 255, 0.16);
   background: rgba(110, 177, 255, 0.08);
 }
 
@@ -451,19 +557,6 @@ h1 {
   margin-top: 6px;
 }
 
-.chip.qualified,
-.chip.under-contract {
-  background: rgba(56, 215, 162, 0.12);
-  color: #84f4c4;
-  border-color: rgba(132, 244, 196, 0.2);
-}
-
-.chip.in-review {
-  background: rgba(110, 177, 255, 0.12);
-  color: #b7d9ff;
-  border-color: rgba(183, 217, 255, 0.2);
-}
-
 .rules-list li,
 .build-list li {
   margin-bottom: 10px;
@@ -471,7 +564,8 @@ h1 {
 
 @media (max-width: 1120px) {
   .hero-panel,
-  .two-col {
+  .two-col,
+  .workflow-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -481,14 +575,21 @@ h1 {
     padding: 24px 16px 40px;
   }
 
-  .topbar {
+  .topbar,
+  .workflow-list-head {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .mission-grid,
   .queue-grid,
   .approval-metric-grid,
-  .approval-meta-grid {
+  .approval-meta-grid,
+  .form-row.two-up {
     grid-template-columns: 1fr;
+  }
+
+  .workflow-actions {
+    flex-direction: column;
   }
 }
