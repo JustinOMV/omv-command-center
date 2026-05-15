@@ -1047,99 +1047,99 @@ function App() {
                     <p>Enter the contract details once, then use the generated timeline to run dispo.</p>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Deal name
-                      <input value={dealForm.dealName} onChange={(event) => setDealForm({ ...dealForm, dealName: event.target.value })} required />
+                    <label className="field-shell">
+                      <span className="field-label">Deal name</span>
+                      <input placeholder="2435 McGregor St" value={dealForm.dealName} onChange={(event) => setDealForm({ ...dealForm, dealName: event.target.value })} required />
                     </label>
-                    <label>
-                      Property address
-                      <input value={dealForm.address} onChange={(event) => setDealForm({ ...dealForm, address: event.target.value })} required />
+                    <label className="field-shell">
+                      <span className="field-label">Property address</span>
+                      <input placeholder="2435 McGregor St, Lakeland, FL 33815" value={dealForm.address} onChange={(event) => setDealForm({ ...dealForm, address: event.target.value })} required />
                     </label>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Accepted date
+                    <label className="field-shell">
+                      <span className="field-label">Accepted date</span>
                       <input type="date" value={dealForm.acceptedDate} onChange={(event) => setDealForm({ ...dealForm, acceptedDate: event.target.value })} required />
                     </label>
-                    <label>
-                      Closing date
+                    <label className="field-shell">
+                      <span className="field-label">Closing date</span>
                       <input type="date" value={dealForm.closingDate} onChange={(event) => setDealForm({ ...dealForm, closingDate: event.target.value })} required />
                     </label>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Asking price
+                    <label className="field-shell">
+                      <span className="field-label">Asking price</span>
                       <input value={dealForm.askingPrice} onChange={(event) => setDealForm({ ...dealForm, askingPrice: event.target.value })} required />
                     </label>
-                    <label>
-                      ARV
+                    <label className="field-shell">
+                      <span className="field-label">ARV</span>
                       <input value={dealForm.arv} onChange={(event) => setDealForm({ ...dealForm, arv: event.target.value })} required />
                     </label>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Beds
+                    <label className="field-shell">
+                      <span className="field-label">Beds</span>
                       <input value={dealForm.beds} onChange={(event) => setDealForm({ ...dealForm, beds: event.target.value })} />
                     </label>
-                    <label>
-                      Baths
+                    <label className="field-shell">
+                      <span className="field-label">Baths</span>
                       <input value={dealForm.baths} onChange={(event) => setDealForm({ ...dealForm, baths: event.target.value })} />
                     </label>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Sqft
+                    <label className="field-shell">
+                      <span className="field-label">Sqft</span>
                       <input value={dealForm.sqft} onChange={(event) => setDealForm({ ...dealForm, sqft: event.target.value })} />
                     </label>
-                    <label>
-                      Lot size
+                    <label className="field-shell">
+                      <span className="field-label">Lot size</span>
                       <input value={dealForm.lotSize} onChange={(event) => setDealForm({ ...dealForm, lotSize: event.target.value })} />
                     </label>
                   </div>
-                  <label>
-                    Property type
+                  <label className="field-shell">
+                    <span className="field-label">Property type</span>
                     <input value={dealForm.propertyType} onChange={(event) => setDealForm({ ...dealForm, propertyType: event.target.value })} />
                   </label>
-                  <label>
-                    Condition
+                  <label className="field-shell">
+                    <span className="field-label">Condition</span>
                     <input value={dealForm.condition} onChange={(event) => setDealForm({ ...dealForm, condition: event.target.value })} />
                   </label>
                   <div className="form-row two-up">
-                    <label>
-                      Occupancy
+                    <label className="field-shell">
+                      <span className="field-label">Occupancy</span>
                       <input value={dealForm.occupancy} onChange={(event) => setDealForm({ ...dealForm, occupancy: event.target.value })} />
                     </label>
-                    <label>
-                      EMD
+                    <label className="field-shell">
+                      <span className="field-label">EMD</span>
                       <input value={dealForm.emd} onChange={(event) => setDealForm({ ...dealForm, emd: event.target.value })} />
                     </label>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Access status
+                    <label className="field-shell">
+                      <span className="field-label">Access status</span>
                       <input value={dealForm.accessStatus} onChange={(event) => setDealForm({ ...dealForm, accessStatus: event.target.value })} />
                     </label>
-                    <label>
-                      Buyer list
+                    <label className="field-shell">
+                      <span className="field-label">Buyer list</span>
                       <input value={dealForm.buyerList} onChange={(event) => setDealForm({ ...dealForm, buyerList: event.target.value })} />
                     </label>
                   </div>
                   <div className="form-row two-up">
-                    <label>
-                      Walkthrough date
+                    <label className="field-shell">
+                      <span className="field-label">Walkthrough date</span>
                       <input type="date" value={dealForm.walkthroughDate} onChange={(event) => setDealForm({ ...dealForm, walkthroughDate: event.target.value })} />
                     </label>
-                    <label>
-                      Offer deadline
+                    <label className="field-shell">
+                      <span className="field-label">Offer deadline</span>
                       <input type="date" value={dealForm.offerDeadline} onChange={(event) => setDealForm({ ...dealForm, offerDeadline: event.target.value })} />
                     </label>
                   </div>
-                  <label>
-                    Title company
+                  <label className="field-shell">
+                    <span className="field-label">Title company</span>
                     <input value={dealForm.titleCompany} onChange={(event) => setDealForm({ ...dealForm, titleCompany: event.target.value })} />
                   </label>
-                  <label>
-                    Dispo notes
+                  <label className="field-shell">
+                    <span className="field-label">Dispo notes</span>
                     <textarea value={dealForm.dispoNotes} onChange={(event) => setDealForm({ ...dealForm, dispoNotes: event.target.value })} rows="4" />
                   </label>
                   <button type="submit" className="primary-button">Create deal</button>

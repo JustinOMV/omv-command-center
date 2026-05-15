@@ -627,6 +627,31 @@ h1 {
   min-height: 92px;
 }
 
+
+.field-shell {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(132, 163, 255, 0.1);
+}
+
+.field-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7fa0c8;
+  font-weight: 800;
+}
+
+.field-shell input,
+.field-shell select,
+.field-shell textarea {
+  border: 0;
+  background: rgba(7, 12, 24, 0.88);
+}
+
 .workflow-list-panel {
   display: grid;
   gap: 16px;
