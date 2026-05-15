@@ -165,6 +165,7 @@ const initialDeals = [
     address: '2435 McGregor St, Lakeland, FL 33815',
     acceptedDate: '2026-05-15',
     closingDate: '2026-06-16',
+    contractedPrice: '$43,000',
     askingPrice: '$65,000',
     arv: '$220K',
     beds: '3',
@@ -181,7 +182,8 @@ const initialDeals = [
     walkthroughDate: '',
     offerDeadline: '',
     titleCompany: '',
-    emd: '$5,000 non-refundable',
+    emdAmount: '$5,000 non-refundable',
+    emdDueDate: '2026-05-18',
     dispoNotes: 'Call through imported Lakeland buyer list first while waiting for property access.',
   },
 ]
@@ -191,6 +193,7 @@ const emptyDealForm = {
   address: '',
   acceptedDate: '',
   closingDate: '',
+  contractedPrice: '',
   askingPrice: '',
   arv: '',
   beds: '',
@@ -207,7 +210,8 @@ const emptyDealForm = {
   walkthroughDate: '',
   offerDeadline: '',
   titleCompany: '',
-  emd: '',
+  emdAmount: '',
+  emdDueDate: '',
   dispoNotes: '',
 }
 
@@ -444,6 +448,7 @@ function App() {
     return [
       { title: 'Contract accepted / dispo clock starts', due: deal.acceptedDate || 'TBD', owner: 'Dispo Manager', status: 'Completed' },
       { title: 'Open title + verify record complete', due: 'Day 0', owner: 'Dispo Assistant', status: 'Pending' },
+      { title: 'Send EMD to title', due: deal.emdDueDate || '3 days after accepted date', owner: 'JJ / Transactions', status: 'Critical' },
       { title: 'Confirm access + request media', due: 'Day 0', owner: 'Acq / Seller', status: deal.photosStatus === 'Ready' ? 'Completed' : 'Active' },
       { title: 'Build buyer list + prep outreach', due: 'Day 1', owner: 'Dispo Assistant', status: 'Pending' },
       { title: 'Proactive A-tier buyer outreach', due: 'Day 2', owner: 'Dispo Manager', status: 'Pending' },
@@ -1068,12 +1073,22 @@ function App() {
                   </div>
                   <div className="form-row two-up">
                     <label className="field-shell">
+                      <span className="field-label">Contracted price with seller</span>
+                      <input value={dealForm.contractedPrice} onChange={(event) => setDealForm({ ...dealForm, contractedPrice: event.target.value })} required />
+                    </label>
+                    <label className="field-shell">
                       <span className="field-label">Asking price</span>
                       <input value={dealForm.askingPrice} onChange={(event) => setDealForm({ ...dealForm, askingPrice: event.target.value })} required />
                     </label>
+                  </div>
+                  <div className="form-row two-up">
                     <label className="field-shell">
                       <span className="field-label">ARV</span>
                       <input value={dealForm.arv} onChange={(event) => setDealForm({ ...dealForm, arv: event.target.value })} required />
+                    </label>
+                    <label className="field-shell">
+                      <span className="field-label">EMD amount</span>
+                      <input value={dealForm.emdAmount} onChange={(event) => setDealForm({ ...dealForm, emdAmount: event.target.value })} required />
                     </label>
                   </div>
                   <div className="form-row two-up">
@@ -1110,8 +1125,8 @@ function App() {
                       <input value={dealForm.occupancy} onChange={(event) => setDealForm({ ...dealForm, occupancy: event.target.value })} />
                     </label>
                     <label className="field-shell">
-                      <span className="field-label">EMD</span>
-                      <input value={dealForm.emd} onChange={(event) => setDealForm({ ...dealForm, emd: event.target.value })} />
+                      <span className="field-label">EMD due date</span>
+                      <input type="date" value={dealForm.emdDueDate} onChange={(event) => setDealForm({ ...dealForm, emdDueDate: event.target.value })} />
                     </label>
                   </div>
                   <div className="form-row two-up">
@@ -1164,8 +1179,11 @@ function App() {
                         <div className="approval-meta-grid referral-meta-grid">
                           <div><span className="micro-label">Accepted</span><p>{deal.acceptedDate}</p></div>
                           <div><span className="micro-label">Closing</span><p>{deal.closingDate}</p></div>
+                          <div><span className="micro-label">Contract</span><p>{deal.contractedPrice}</p></div>
                           <div><span className="micro-label">Ask</span><p>{deal.askingPrice}</p></div>
                           <div><span className="micro-label">ARV</span><p>{deal.arv}</p></div>
+                          <div><span className="micro-label">EMD</span><p>{deal.emdAmount}</p></div>
+                          <div><span className="micro-label">EMD due</span><p>{deal.emdDueDate || '3 days after accepted'}</p></div>
                           <div><span className="micro-label">Access</span><p>{deal.accessStatus}</p></div>
                           <div><span className="micro-label">Buyer list</span><p>{deal.buyerList}</p></div>
                         </div>
