@@ -214,6 +214,7 @@ const approvalChannelOptions = ['Text', 'Email', 'Call Notes', 'Direct Mail']
 const priorityOptions = ['High', 'Medium', 'Low']
 const referralStatusOptions = ['New Referral', 'Qualified', 'In Review', 'Offer / Dispo Active', 'Under Contract', 'Closed + Paid']
 const payoutOptions = ['Not Started', 'Pending close', 'Awaiting disposition', 'Scheduled', 'Paid']
+const appTabs = ['Overview', 'Approvals', 'Referrals', 'Bots', 'Deals']
 const approvalStorageKey = 'omv-command-center-approval-items'
 const referralStorageKey = 'omv-command-center-referral-items'
 const authStorageKey = 'omv-command-center-unlocked'
@@ -287,6 +288,7 @@ function App() {
   })
   const [passcodeInput, setPasscodeInput] = useState('')
   const [authError, setAuthError] = useState('')
+  const [activeTab, setActiveTab] = useState('Overview')
 
   const approvalMetrics = useMemo(
     () => [
@@ -438,11 +440,16 @@ function App() {
         </div>
 
         <nav className="side-nav">
-          <button className="nav-item active">Overview</button>
-          <button className="nav-item">Approvals</button>
-          <button className="nav-item">Referrals</button>
-          <button className="nav-item">Bots</button>
-          <button className="nav-item">Deals</button>
+          {appTabs.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              className={`nav-item ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
         </nav>
 
         <div className="side-card">
@@ -474,6 +481,8 @@ function App() {
           </div>
         </header>
 
+        {activeTab === 'Overview' ? (
+          <>
         <section className="hero-panel premium-hero-panel">
           <div className="mission-block mission-block-premium">
             <div className="mission-copy">
@@ -578,6 +587,10 @@ function App() {
           </div>
         </section>
 
+        </>
+        ) : null}
+
+        {activeTab === 'Approvals' ? (
         <section className="section-block workflow-section premium-workflow-section">
           <div className="section-head">
             <h2>Approval Queue</h2>
@@ -704,7 +717,9 @@ function App() {
             </div>
           </div>
         </section>
+        ) : null}
 
+        {activeTab === 'Referrals' ? (
         <section className="section-block workflow-section premium-workflow-section">
           <div className="section-head">
             <h2>Agent Referral System</h2>
@@ -872,7 +887,71 @@ function App() {
             </div>
           </div>
         </section>
+        ) : null}
 
+        {activeTab === 'Bots' ? (
+          <section className="section-block">
+            <div className="section-head">
+              <h2>Bot roster</h2>
+              <p>The internal operator stack behind the OMV machine.</p>
+            </div>
+            <div className="bot-grid premium-bot-grid">
+              {bots.map((bot) => (
+                <article key={bot.name} className="bot-card premium-bot-card">
+                  <div className="bot-header">
+                    <div>
+                      <p className="lane">{bot.lane}</p>
+                      <h3>{bot.name}</h3>
+                      <p className="role">{bot.role}</p>
+                    </div>
+                    <div className="bot-header-meta">
+                      <span className={`chip ${statusClassName(bot.status)}`}>{bot.status}</span>
+                      <span className="priority-tag">{bot.priority}</span>
+                    </div>
+                  </div>
+                  <p className="focus">{bot.focus}</p>
+                  <ul>
+                    {bot.outputs.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {activeTab === 'Deals' ? (
+          <section className="section-block two-col premium-footer-grid">
+            <div className="panel">
+              <div className="section-head compact">
+                <h2>Operating rules</h2>
+                <p>The standards this room should enforce every day.</p>
+              </div>
+              <ul className="rules-list">
+                {systemRules.map((rule) => (
+                  <li key={rule}>{rule}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="panel build-panel">
+              <div className="section-head compact">
+                <h2>Next build wave</h2>
+                <p>What upgrades this from local command center to deeper OMV infrastructure.</p>
+              </div>
+              <ol className="build-list">
+                <li>Connect live FUB and Zap status into the dashboard.</li>
+                <li>Let JJ change the passcode in-app.</li>
+                <li>Add searchable notes and timeline history to approvals and referrals.</li>
+                <li>Add a seller follow-up board for Mason and Bolt.</li>
+                <li>Add dispo and buyer watchlists for Harbor and Scout.</li>
+              </ol>
+            </div>
+          </section>
+        ) : null}
+
+        {activeTab !== 'Deals' ? (
         <section className="section-block two-col premium-footer-grid">
           <div className="panel">
             <div className="section-head compact">
@@ -900,6 +979,7 @@ function App() {
             </ol>
           </div>
         </section>
+        ) : null}
       </main>
     </div>
   )
